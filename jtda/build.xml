@@ -1,0 +1,53 @@
+<project name="JavaThreadDumpAnalyser" basedir="." default="help">
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="./lib/ant-contrib-1.0b3.jar" />
+  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+           classpath="./lib/jarjar-1.0.jar"/>
+
+  <target name="help">
+    <java classname="org.apache.tools.ant.Main">
+      <arg value="-projecthelp" />
+    </java>
+  </target>
+
+  <target name="clean" description="Comile classes">
+    <delete dir="./build" />
+  </target>
+
+  <target name="build" description="Comile classes">
+    <mkdir dir="./build" />
+    <mkdir dir="./build/classes" />
+
+    <javac destdir="./build/classes" debug="true" source="1.6" target="1.6"
+           includeantruntime="false">
+      <src path="./src"/>
+      <classpath>
+        <fileset dir="./lib" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="jar" description="Create Jars" depends="build" >
+
+    <mkdir dir="./build/tmp/" />
+    <mkdir dir="./build/jars/" />
+
+    <!-- UI (App Code) -->
+    <jarjar jarfile="./build/tmp/jtda-wrapper.jar">
+      <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+    </jarjar>
+
+    <!-- UI (Cross platform SWT wrapper around App Code) -->
+    <jarjar jarfile="./build/jars/jtda.jar">
+      <manifest>
+        <attribute name="Main-Class" value="org.jtda.loader.JavaThreadDumpAnalyserLauncher" />
+        <attribute name="Class-Path" value="." />
+      </manifest>
+      <fileset dir="./build/classes" includes="**/loader/*.class" />
+      <fileset dir="./build/tmp" includes="jtda-wrapper.jar" />
+      <fileset dir="./lib" includes="swt-*.jar" />
+      <zipfileset excludes="META-INF/*.MF" src="lib/jar-in-jar-loader.jar"/>
+    </jarjar>
+  </target>
+</project>
