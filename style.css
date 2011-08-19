@@ -122,3 +122,9 @@ p
 }
 	
 .nav{ padding-left:15px; }
+
+.short
+{
+  height: 100px;
+  overflow: scroll;
+}
