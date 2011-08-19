@@ -403,10 +403,20 @@ public class JavaThreadDumpAnalyser
   private void outputNames(StringBuilder resultText, List<StackTrace> traces)
   {
     resultText.append("Names:\n");
+    
+    // Sort names
+    List<String> threadNames = new ArrayList<String>();
     for (StackTrace trace : traces)
     {
-      resultText.append(" - \"" + trace.name + "\"\n");
-    }    
+      threadNames.add(trace.name);
+    }
+    Collections.sort(threadNames);
+    
+    // Output names
+    for (String name : threadNames)
+    {
+      resultText.append(" - \"" + name + "\"\n");
+    }
   }
 
   public static void main(String[] args)
