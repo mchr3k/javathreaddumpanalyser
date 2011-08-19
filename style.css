@@ -69,6 +69,7 @@ body
 	text-decoration:underline;
 }
 
+#title a,
 .col2 a 
 {
 	color:#000000;
