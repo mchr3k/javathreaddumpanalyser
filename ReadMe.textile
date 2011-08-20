@@ -1,1 +1,1 @@
-See notes in jtda folder.
+Full details available on the "Java Thread Dump Analyser Site":http://mchr3k.github.com/javathreaddumpanalyser/
