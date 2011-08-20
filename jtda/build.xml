@@ -3,6 +3,8 @@
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="./lib/ant-contrib-1.0b3.jar" />
   <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
            classpath="./lib/jarjar-1.0.jar"/>
+  <taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
+           classpath="./lib/swtjar.jar"/>
 
   <target name="help">
     <java classname="org.apache.tools.ant.Main">
@@ -32,22 +34,18 @@
     <mkdir dir="./build/tmp/" />
     <mkdir dir="./build/jars/" />
 
-    <!-- UI (App Code) -->
-    <jarjar jarfile="./build/tmp/jtda-wrapper.jar">
+    <!-- UI (Cross platform SWT Jar) -->
+	<swtjar jarfile="./build/jars/jtda.jar"
+	        targetmainclass="org.jtda.JavaThreadDumpAnalyser"
+			swtversion="3.6.2">
+	  <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
-      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-    </jarjar>
 
-    <!-- UI (Cross platform SWT wrapper around App Code) -->
-    <jarjar jarfile="./build/jars/jtda.jar">
-      <manifest>
-        <attribute name="Main-Class" value="org.jtda.loader.JavaThreadDumpAnalyserLauncher" />
-        <attribute name="Class-Path" value="." />
-      </manifest>
-      <fileset dir="./build/classes" includes="**/loader/*.class" />
-      <fileset dir="./build/tmp" includes="jtda-wrapper.jar" />
-      <fileset dir="./lib" includes="swt-*.jar" />
-      <zipfileset excludes="META-INF/*.MF" src="lib/jar-in-jar-loader.jar"/>
-    </jarjar>
+	  <!-- Required Jars -->
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+	  
+	  <!-- SWT Jars -->
+      <fileset dir="./lib" includes="swt-*-3.6.2.jar" />
+    </swtjar>
   </target>
 </project>
