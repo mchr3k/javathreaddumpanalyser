@@ -15,6 +15,8 @@ import java.util.TreeMap;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -42,6 +44,7 @@ public class JavaThreadDumpAnalyser
   private final Button terminatedToggle;
   private final Button analyseButton;
   private final Button namesToggle;
+  private final Button ignoreLocks;
 
   public JavaThreadDumpAnalyser(Shell xiWindow)
   {
@@ -66,22 +69,35 @@ public class JavaThreadDumpAnalyser
     inputText = new Text(inputComp, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL
         | SWT.BORDER);
     inputText.setLayoutData("grow,hmin 0,wmin 0");
+    inputText.addKeyListener(new KeyAdapter()
+    {
+      @Override
+      public void keyPressed(KeyEvent e)
+      {
+        if(((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'a'))
+        {
+          inputText.selectAll();
+        }
+      }
+    });
 
-    analyseButton.addSelectionListener(new SelectionAdapter()
+    SelectionListener analyse = new SelectionAdapter()
     {
       @Override
       public void widgetSelected(SelectionEvent arg0)
       {
         analyse();
       }
-    });
+    };
+
+    analyseButton.addSelectionListener(analyse);
 
     TabItem outputItem = new TabItem(folder, SWT.NONE);
     Composite outputComp = new Composite(folder, SWT.NONE);
     outputComp.setLayoutData("grow,hmin 0,wmin 0");
     outputItem.setControl(outputComp);
     outputItem.setText("Results");
-    MigLayout outputLayout = new MigLayout("fill", "[][][][][grow]", "[][][grow]");
+    MigLayout outputLayout = new MigLayout("fill", "[][][][][][grow]", "[][][grow]");
     outputComp.setLayout(outputLayout);
 
     SelectionListener update = new SelectionAdapter()
@@ -92,7 +108,7 @@ public class JavaThreadDumpAnalyser
         updateOutput();
       }
     };
-    
+
     newToggle = new Button(outputComp, SWT.CHECK);
     newToggle.setText(Thread.State.NEW.toString());
     newToggle.setSelection(true);
@@ -107,7 +123,7 @@ public class JavaThreadDumpAnalyser
     blockedToggle.addSelectionListener(update);
     namesToggle = new Button(outputComp, SWT.CHECK);
     namesToggle.setText("Include Thread Names");
-    namesToggle.setSelection(true);
+    namesToggle.setSelection(false);
     namesToggle.addSelectionListener(update);
     namesToggle.setLayoutData("wrap");
 
@@ -123,12 +139,27 @@ public class JavaThreadDumpAnalyser
     terminatedToggle.setText(Thread.State.TERMINATED.toString());
     terminatedToggle.setSelection(true);
     terminatedToggle.addSelectionListener(update);
-    terminatedToggle.setLayoutData("wrap");
+    ignoreLocks = new Button(outputComp, SWT.CHECK);
+    ignoreLocks.setText("Ignore Locks");
+    ignoreLocks.setSelection(true);
+    ignoreLocks.addSelectionListener(analyse);
+    ignoreLocks.setLayoutData("wrap");
 
     outputText = new Text(outputComp, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL
         | SWT.BORDER);
-    outputText.setLayoutData("grow,spanx 5,hmin 0,wmin 0");
-    
+    outputText.setLayoutData("grow,spanx 6,hmin 0,wmin 0");
+    outputText.addKeyListener(new KeyAdapter()
+    {
+      @Override
+      public void keyPressed(KeyEvent e)
+      {
+        if(((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'a'))
+        {
+          outputText.selectAll();
+        }
+      }
+    });
+
     inputText.forceFocus();
   }
 
@@ -148,12 +179,13 @@ public class JavaThreadDumpAnalyser
   {
     analyseButton.setEnabled(false);
     final String input = inputText.getText();
+    final boolean locks = ignoreLocks.getSelection();
     Runnable r = new Runnable()
     {
       @Override
       public void run()
       {
-        analyseSameThread(input);
+        analyseSameThread(input, locks);
       }
     };
     Thread t = new Thread(r);
@@ -167,7 +199,7 @@ public class JavaThreadDumpAnalyser
     NAME, STATE, STACK, LOCKS, SAVE;
   }
 
-  private void analyseSameThread(String input)
+  private void analyseSameThread(String input, boolean locks)
   {
     String[] lines = input.split("\n");
     lines = Arrays.copyOf(lines, lines.length + 1);
@@ -179,7 +211,7 @@ public class JavaThreadDumpAnalyser
     String name = null;
     Thread.State state = null;
     List<String> stack = null;
-    List<String> locks = null;
+    boolean lSeenOwnedSync = false;
 
     // Collected stack traces
     traces = new ArrayList<StackTrace>();
@@ -192,13 +224,13 @@ public class JavaThreadDumpAnalyser
       {
       case NAME:
       {
+        lSeenOwnedSync = false;
         if (line.startsWith("\"") && (line.indexOf('"', 1) > 0))
         {
           s = State.STATE;
-          name = line.substring(1, line.indexOf('"', 1));          
+          name = line.substring(1, line.indexOf('"', 1));
           state = Thread.State.RUNNABLE;
           stack = new ArrayList<String>(1);
-          locks = new ArrayList<String>(1);
         }
       }
       break;
@@ -241,12 +273,29 @@ public class JavaThreadDumpAnalyser
         }
         else if (line.startsWith("- "))
         {
-          // Ignore lock line
+          if (locks)
+          {
+            int startIndex = line.indexOf("<");
+            String newline = null;
+            if (startIndex > -1)
+            {
+              int endIndex = line.indexOf(">", startIndex + 1);
+              if (endIndex > -1)
+              {
+                newline = line.substring(0, startIndex + 1) +
+                          "IGNORED" + line.substring(endIndex, line.length());
+              }
+            }
+            if (newline != null)
+            {
+              line = newline;
+            }
+          }
+          stack.add(line);
         }
         else if (line.length() == 0)
         {
           s = State.LOCKS;
-          locks = new ArrayList<String>(1);
         }
       }
       break;
@@ -261,9 +310,37 @@ public class JavaThreadDumpAnalyser
         {
           // Ignore
         }
+        else if (line.startsWith("- None"))
+        {
+          // Ignore
+        }
         else if (line.startsWith("- "))
         {
-          locks.add(line.substring(2));
+          if (!lSeenOwnedSync)
+          {
+            stack.add("Locked ownable synchronizers:");
+            lSeenOwnedSync = true;
+          }
+          line = line.substring(2);
+          if (locks)
+          {
+            int startIndex = line.indexOf("<");
+            String newline = null;
+            if (startIndex > -1)
+            {
+              int endIndex = line.indexOf(">", startIndex + 1);
+              if (endIndex > -1)
+              {
+                newline = line.substring(0, startIndex + 1) +
+                          "IGNORED" + line.substring(endIndex, line.length());
+              }
+            }
+            if (newline != null)
+            {
+              line = newline;
+            }
+          }
+          stack.add(line);
         }
         else if (line.length() == 0)
         {
@@ -275,9 +352,9 @@ public class JavaThreadDumpAnalyser
       case SAVE:
       {
         ii--;
-        
+
         // Found stack trace
-        traces.add(new StackTrace(name, state, stack, locks));
+        traces.add(new StackTrace(name, state, stack));
 
         // Reset state
         s = State.NAME;
@@ -285,7 +362,7 @@ public class JavaThreadDumpAnalyser
       break;
       }
     }
-    
+
     updateOutput();
   }
 
@@ -295,7 +372,7 @@ public class JavaThreadDumpAnalyser
     final Set<Thread.State> activeStates = new HashSet<Thread.State>();
     final boolean[] includeNames = new boolean[1];
     window.getDisplay().syncExec(new Runnable()
-    {      
+    {
       @Override
       public void run()
       {
@@ -331,17 +408,17 @@ public class JavaThreadDumpAnalyser
       List<StackTrace> commonTraces = stackTraceCounts.get(trace.stack);
       if (commonTraces == null)
       {
-        commonTraces = new ArrayList<StackTrace>();        
+        commonTraces = new ArrayList<StackTrace>();
         stackTraceCounts.put(trace.stack, commonTraces);
       }
-      commonTraces.add(trace);      
+      commonTraces.add(trace);
     }
-    
+
     // Sort results
     List<Entry<List<String>, List<StackTrace>>> sortedTraces = new ArrayList<Entry<List<String>,List<StackTrace>>>();
     sortedTraces.addAll(stackTraceCounts.entrySet());
     Collections.sort(sortedTraces, new EntryComparator());
-    
+
     // Output results
     StringBuilder resultText = new StringBuilder("Total threads: " + filteredTraces.size() + "\n\n");
     for (Entry<List<String>, List<StackTrace>> e : sortedTraces)
@@ -363,12 +440,19 @@ public class JavaThreadDumpAnalyser
       {
         for (String traceline : trace)
         {
-          resultText.append(" - " + traceline + "\n");
+          if (traceline.startsWith("Locked "))
+          {
+            resultText.append(" " + traceline + "\n");
+          }
+          else
+          {
+            resultText.append(" - " + traceline + "\n");
+          }
         }
       }
       resultText.append("\n");
     }
-    
+
     final String output = resultText.toString();
     window.getDisplay().syncExec(new Runnable()
     {
@@ -399,11 +483,11 @@ public class JavaThreadDumpAnalyser
     }
     resultText.append("States: " + stateCount.toString() + "\n");
   }
-  
+
   private void outputNames(StringBuilder resultText, List<StackTrace> traces)
   {
     resultText.append("Names:\n");
-    
+
     // Sort names
     List<String> threadNames = new ArrayList<String>();
     for (StackTrace trace : traces)
@@ -411,7 +495,7 @@ public class JavaThreadDumpAnalyser
       threadNames.add(trace.name);
     }
     Collections.sort(threadNames);
-    
+
     // Output names
     for (String name : threadNames)
     {
@@ -422,8 +506,8 @@ public class JavaThreadDumpAnalyser
   public static void main(String[] args)
   {
     final Shell window = new Shell();
-    window.setSize(new Point(600, 600));
-    window.setMinimumSize(new Point(600, 600));
+    window.setSize(new Point(650, 600));
+    window.setMinimumSize(new Point(650, 600));
     window.setText("Java Thread Dump Analyser");
 
     // Fill in UI
@@ -436,18 +520,16 @@ public class JavaThreadDumpAnalyser
   private static class StackTrace
   {
     public StackTrace(String name, java.lang.Thread.State state,
-        List<String> stack, List<String> locks)
+                      List<String> stack)
     {
       this.name = name;
       this.state = state;
       this.stack = stack;
-      this.locks = locks;
     }
 
     public final String name;
     public final Thread.State state;
     public final List<String> stack;
-    public final List<String> locks;
 
     @Override
     public String toString()
@@ -458,12 +540,6 @@ public class JavaThreadDumpAnalyser
       for (String ele : stack)
       {
         str.append(" at " + ele + "\n");
-      }
-      str.append("\n");
-      str.append("Locked:\n");
-      for (String lock : locks)
-      {
-        str.append(" - " + lock + "\n");
       }
       str.append("\n");
       return str.toString();
