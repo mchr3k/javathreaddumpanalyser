@@ -1,4 +1,4 @@
-<project name="JavaThreadDumpAnalyser" basedir="." default="help">
+<project name="JavaThreadDumpAnalyser" basedir="." default="jar">
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="./lib/ant-contrib-1.0b3.jar" />
   <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
