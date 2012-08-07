@@ -1,10 +1,10 @@
 <project name="JavaThreadDumpAnalyser" basedir="." default="help">
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="./lib/ant-contrib-1.0b3.jar" />
-  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
-           classpath="./lib/jarjar-1.0.jar"/>
+  <!-- Package SWT jars -->
   <taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
            classpath="./lib/swtjar.jar"/>
+  <!-- Package OSX bundle -->
   <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" 
            classpath="./lib/jarbundler-2.2.0.jar"/>
 
@@ -37,36 +37,36 @@
     <mkdir dir="./build/jars/" />
 
     <!-- UI (Cross platform SWT Jar (Windows/Linux)) -->
-  	<swtjar jarfile="./build/jars/jtda.jar"
+    <swtjar jarfile="./build/jars/jtda.jar"
 	          targetmainclass="org.jtda.JavaThreadDumpAnalyser"
 	     		  swtversion="3.6.2">
-	    <!-- JTDA classes -->
+      <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
-	    <!-- Required Jars -->
+      <!-- Required Jars -->
       <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-	  
-	    <!-- SWT Jars -->
+
+      <!-- SWT Jars -->
       <fileset dir="./lib" includes="swt-win*-3.6.2.jar" />
-	    <fileset dir="./lib" includes="swt-lin*-3.6.2.jar" />
+      <fileset dir="./lib" includes="swt-lin*-3.6.2.jar" />
     </swtjar>
-    
+
     <!-- UI (Cross platform SWT Jar (Windows/Linux)) -->
-  	<swtjar jarfile="./build/tmp/jtda-osx.jar"
+    <swtjar jarfile="./build/tmp/jtda-osx.jar"
 	          targetmainclass="org.jtda.JavaThreadDumpAnalyser"
 	     		  swtversion="3.6.2">
-	    <!-- JTDA classes -->
+      <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
-	    <!-- Required Jars -->
+      <!-- Required Jars -->
       <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-	  
-	    <!-- SWT Jars -->
+
+      <!-- SWT Jars -->
       <fileset dir="./lib" includes="swt-osx*-3.6.2.jar" />
     </swtjar>
-	
+
     <!-- UI (OSX application) -->
-    <mkdir dir="./build/tmp/JTDAApp/" /> 
+    <mkdir dir="./build/tmp/JTDAApp/" />
     <jarbundler dir="./build/tmp/JTDAApp/"
                 name="JTDA"
                 mainclass="org.swtjar.SWTLoader" 
