@@ -1,4 +1,4 @@
-<project name="JavaThreadDumpAnalyser" basedir="." default="help">
+<project name="JavaThreadDumpAnalyser" basedir="." default="jar">
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="./lib/ant-contrib-1.0b3.jar" />
   <!-- Package SWT jars -->
@@ -14,11 +14,11 @@
     </java>
   </target>
 
-  <target name="clean" description="Comile classes">
+  <target name="clean" description="Clean">
     <delete dir="./build" />
   </target>
 
-  <target name="build" description="Comile classes">
+  <target name="build" description="Compile classes">
     <mkdir dir="./build" />
     <mkdir dir="./build/classes" />
 

@@ -4,7 +4,7 @@ This project implements a tool to analyse Java thread dumps.
 
 * Download the "jtda.jar":https://github.com/downloads/mchr3k/javathreaddumpanalyser/jtda.jar
 * Run the jar from the command line
-** Windows/Linux - "java -jar styledtextscroll.jar"
-** OSX - "java -jar styledtextscroll.jar -XstartOnFirstThread"
+** Windows/Linux - "java -jar jtda.jar"
+** OSX - "java -jar jtda.jar -XstartOnFirstThread"
 * Parse your thread dump text into the input
 * Press Analyse
