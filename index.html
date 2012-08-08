@@ -761,7 +761,7 @@ the input tab and press the Analyse button.
 <p>Here is an example of the output which is generated.
 
 <pre class="short">
-Total threads: 62
+Total threads: 63
 
 32 threads with trace:
 States: {WAITING=32}
@@ -800,10 +800,10 @@ Names:
  - "http-apr-8080-Poller-7"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a org.apache.tomcat.util.net.AprEndpoint$Poller)
+ - - waiting on <IGNORED> (a org.apache.tomcat.util.net.AprEndpoint$Poller)
  - java.lang.Object.wait(Object.java:485)
  - org.apache.tomcat.util.net.AprEndpoint$Poller.run(AprEndpoint.java:1234)
- - - locked &lt;IGNORED&gt; (a org.apache.tomcat.util.net.AprEndpoint$Poller)
+ - - locked <IGNORED> (a org.apache.tomcat.util.net.AprEndpoint$Poller)
 
 10 threads with trace:
 States: {WAITING=10}
@@ -820,7 +820,7 @@ Names:
  - "http-apr-8080-exec-9"
 Stack:
  - sun.misc.Unsafe.park(Native Method)
- - - parking to wait for  &lt;IGNORED&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+ - - parking to wait for  <IGNORED> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
  - java.util.concurrent.locks.LockSupport.park(LockSupport.java:158)
  - java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1987)
  - java.util.concurrent.LinkedBlockingQueue.take(LinkedBlockingQueue.java:399)
@@ -830,13 +830,14 @@ Stack:
  - java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:907)
  - java.lang.Thread.run(Thread.java:662)
 
-5 threads with trace:
-States: {RUNNABLE=5}
+6 threads with trace:
+States: {RUNNABLE=6}
 Names:
  - "Attach Listener"
  - "C1 CompilerThread0"
  - "Low Memory Detector"
  - "Signal Dispatcher"
+ - "VM Periodic Task Thread"
  - "VM Thread"
 Stack:
  - no stack trace
@@ -851,7 +852,7 @@ Stack:
  - java.net.SocketInputStream.read(SocketInputStream.java:129)
  - java.io.BufferedInputStream.fill(BufferedInputStream.java:218)
  - java.io.BufferedInputStream.read(BufferedInputStream.java:237)
- - - locked &lt;IGNORED&gt; (a java.io.BufferedInputStream)
+ - - locked <IGNORED> (a java.io.BufferedInputStream)
  - java.io.FilterInputStream.read(FilterInputStream.java:66)
  - sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:517)
  - sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:790)
@@ -860,7 +861,7 @@ Stack:
  - java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)
  - java.lang.Thread.run(Thread.java:662)
  Locked ownable synchronizers:
- - &lt;IGNORED&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)
+ - <IGNORED> (a java.util.concurrent.locks.ReentrantLock$NonfairSync)
 
 2 threads with trace:
 States: {RUNNABLE=2}
@@ -887,9 +888,9 @@ Names:
  - "JMX server connection timeout 68"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a [I)
+ - - waiting on <IGNORED> (a [I)
  - com.sun.jmx.remote.internal.ServerCommunicatorAdmin$Timeout.run(ServerCommunicatorAdmin.java:150)
- - - locked &lt;IGNORED&gt; (a [I)
+ - - locked <IGNORED> (a [I)
  - java.lang.Thread.run(Thread.java:662)
 
 1 threads with trace:
@@ -899,7 +900,7 @@ Names:
 Stack:
  - java.net.PlainSocketImpl.socketAccept(Native Method)
  - java.net.PlainSocketImpl.accept(PlainSocketImpl.java:408)
- - - locked &lt;IGNORED&gt; (a java.net.SocksSocketImpl)
+ - - locked <IGNORED> (a java.net.SocksSocketImpl)
  - java.net.ServerSocket.implAccept(ServerSocket.java:462)
  - java.net.ServerSocket.accept(ServerSocket.java:430)
  - sun.management.jmxremote.LocalRMIServerSocketFactory$1.accept(LocalRMIServerSocketFactory.java:34)
@@ -914,7 +915,7 @@ Names:
 Stack:
  - java.net.PlainSocketImpl.socketAccept(Native Method)
  - java.net.PlainSocketImpl.accept(PlainSocketImpl.java:408)
- - - locked &lt;IGNORED&gt; (a java.net.SocksSocketImpl)
+ - - locked <IGNORED> (a java.net.SocksSocketImpl)
  - java.net.ServerSocket.implAccept(ServerSocket.java:462)
  - java.net.ServerSocket.accept(ServerSocket.java:430)
  - org.apache.catalina.core.StandardServer.await(StandardServer.java:447)
@@ -933,10 +934,10 @@ Names:
  - "Reference Handler"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a java.lang.ref.Reference$Lock)
+ - - waiting on <IGNORED> (a java.lang.ref.Reference$Lock)
  - java.lang.Object.wait(Object.java:485)
  - java.lang.ref.Reference$ReferenceHandler.run(Reference.java:116)
- - - locked &lt;IGNORED&gt; (a java.lang.ref.Reference$Lock)
+ - - locked <IGNORED> (a java.lang.ref.Reference$Lock)
 
 1 threads with trace:
 States: {WAITING=1}
@@ -944,10 +945,10 @@ Names:
  - "http-apr-8080-Sendfile-0"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a org.apache.tomcat.util.net.AprEndpoint$Sendfile)
+ - - waiting on <IGNORED> (a org.apache.tomcat.util.net.AprEndpoint$Sendfile)
  - java.lang.Object.wait(Object.java:485)
  - org.apache.tomcat.util.net.AprEndpoint$Sendfile.run(AprEndpoint.java:1548)
- - - locked &lt;IGNORED&gt; (a org.apache.tomcat.util.net.AprEndpoint$Sendfile)
+ - - locked <IGNORED> (a org.apache.tomcat.util.net.AprEndpoint$Sendfile)
 
 1 threads with trace:
 States: {TIMED_WAITING=1}
@@ -964,7 +965,7 @@ Names:
  - "RMI Scheduler(0)"
 Stack:
  - sun.misc.Unsafe.park(Native Method)
- - - parking to wait for  &lt;IGNORED&gt; (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+ - - parking to wait for  <IGNORED> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
  - java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:198)
  - java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2025)
  - java.util.concurrent.DelayQueue.take(DelayQueue.java:164)
@@ -980,9 +981,9 @@ Names:
  - "GC Daemon"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a sun.misc.GC$LatencyLock)
+ - - waiting on <IGNORED> (a sun.misc.GC$LatencyLock)
  - sun.misc.GC$Daemon.run(GC.java:100)
- - - locked &lt;IGNORED&gt; (a sun.misc.GC$LatencyLock)
+ - - locked <IGNORED> (a sun.misc.GC$LatencyLock)
 
 1 threads with trace:
 States: {WAITING=1}
@@ -990,9 +991,9 @@ Names:
  - "Finalizer"
 Stack:
  - java.lang.Object.wait(Native Method)
- - - waiting on &lt;IGNORED&gt; (a java.lang.ref.ReferenceQueue$Lock)
+ - - waiting on <IGNORED> (a java.lang.ref.ReferenceQueue$Lock)
  - java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:118)
- - - locked &lt;IGNORED&gt; (a java.lang.ref.ReferenceQueue$Lock)
+ - - locked <IGNORED> (a java.lang.ref.ReferenceQueue$Lock)
  - java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:134)
  - java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:159)
 </pre>
