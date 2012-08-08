@@ -252,7 +252,8 @@ public class JavaThreadDumpAnalyser
       break;
       case STATE:
       {
-        if (line.startsWith("\"") && (line.indexOf('"', 1) > 0))
+        if ((ii == (lines.length - 1)) ||
+            (line.startsWith("\"") && (line.indexOf('"', 1) > 0)))
         {
           ii--;
           s = State.SAVE;
@@ -279,7 +280,8 @@ public class JavaThreadDumpAnalyser
       break;
       case STACK:
       {
-        if (line.startsWith("\"") && (line.indexOf('"', 1) > 0))
+        if ((ii == (lines.length - 1)) ||
+            (line.startsWith("\"") && (line.indexOf('"', 1) > 0)))
         {
           ii--;
           s = State.SAVE;
@@ -313,7 +315,8 @@ public class JavaThreadDumpAnalyser
       break;
       case LOCKS:
       {
-        if (line.startsWith("\"") && (line.indexOf('"', 1) > 0))
+        if ((ii == (lines.length - 1)) ||
+            (line.startsWith("\"") && (line.indexOf('"', 1) > 0)))
         {
           ii--;
           s = State.SAVE;
