@@ -36,10 +36,24 @@
     <mkdir dir="./build/tmp/" />
     <mkdir dir="./build/jars/" />
 
+    <!-- CLI (Cross platform CLI Jar (Windows/Linux/OSX)) -->
+    <jar jarfile="./build/jars/jtda-cli.jar">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="org.jtda.JtdaCLI"/>
+      </manifest>
+      
+      <!-- JTDA classes -->
+      <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
+
+      <!-- Required Jars -->
+      <zipfileset excludes="META-INF/*.MF" src="lib/jcommander-1.30-SNAPSHOT.jar"/>
+    </jar>
+    
     <!-- UI (Cross platform SWT Jar (Windows/Linux)) -->
     <swtjar jarfile="./build/jars/jtda.jar"
-	          targetmainclass="org.jtda.JavaThreadDumpAnalyser"
-	     		  swtversion="3.6.2">
+            targetmainclass="org.jtda.JavaThreadDumpAnalyser"
+            swtversion="3.6.2">
       <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
@@ -51,10 +65,10 @@
       <fileset dir="./lib" includes="swt-lin*-3.6.2.jar" />
     </swtjar>
 
-    <!-- UI (Cross platform SWT Jar (Windows/Linux)) -->
+    <!-- UI (Cross platform SWT Jar (OSX)) -->
     <swtjar jarfile="./build/tmp/jtda-osx.jar"
-	          targetmainclass="org.jtda.JavaThreadDumpAnalyser"
-	     		  swtversion="3.6.2">
+            targetmainclass="org.jtda.JavaThreadDumpAnalyser"
+            swtversion="3.6.2">
       <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
