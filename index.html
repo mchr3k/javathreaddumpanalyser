@@ -7,10 +7,11 @@ title: Home
 <p>Java Thread Dump Analyser is a tool for quickly summarising lengthy Java thread dumps.
 
 <h3>Download</h3>
-<p>New version released <b>08/08/2012:</b> Fixes a bug which caused the last thread in a thread dump to be ignored.
+<p>News: <b>25/10/2012:</b> Add command line version. <b>08/08/2012:</b> Fixes a bug which caused the last thread in a thread dump to be ignored.
 <ul>
 <li><a href="http://intracesite.appspot.com/files/jtda.jar">jtda.jar</a> (Windows/Linux)
 <li><a href="http://intracesite.appspot.com/files/JTDA.app.tar">JTDA.app.tar</a> (OSX)
+<li><a href="http://intracesite.appspot.com/files/jtda-cli.jar">jtda-cli.jar</a> (Windows/Linux/OSX)
 </ul>
 
 <h3>The Problem</h3>
@@ -997,3 +998,15 @@ Stack:
  - java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:134)
  - java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:159)
 </pre>
+
+<h3>Command Line Version</h3>
+
+<p>jtda-cli.jar can be used at the command line to perform the same thread dump summarization as the GUI.
+
+<p>To see the usage:
+
+<pre>java -jar jtda-cli.jar --help</pre>
+
+<p>To perform the standard summarization:
+
+<pre>cat thread_dump.txt | java -jar jtda-cli.jar</pre>
