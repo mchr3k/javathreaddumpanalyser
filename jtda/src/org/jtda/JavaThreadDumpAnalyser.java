@@ -1,5 +1,10 @@
 package org.jtda;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,25 +28,36 @@ import org.eclipse.swt.widgets.Text;
 
 public class JavaThreadDumpAnalyser
 {
-  private final Shell window;
-  private final Text inputText;
-  private final Text outputText;
-  private final TabFolder folder;
-  private final Button newToggle;
-  private final Button runnableToggle;
-  private final Button blockedToggle;
-  private final Button waitingToggle;
-  private final Button timedwaitingToggle;
-  private final Button terminatedToggle;
-  private final Button analyseButton;
-  private final Button namesToggle;
-  private final Button ignoreLocksToggle;
-  private final Group filterGroup;
-  private final Group outputGroup;
-
+  private Shell window;
+  private Text inputText;
+  private Text outputText;
+  private TabFolder folder;
+  private Button newToggle;
+  private Button runnableToggle;
+  private Button blockedToggle;
+  private Button waitingToggle;
+  private Button timedwaitingToggle;
+  private Button terminatedToggle;
+  private Button analyseButton;
+  private Button namesToggle;
+  private Button ignoreLocksToggle;
+  private Group filterGroup;
+  private Group outputGroup;
+  
   private final JtdaCore data = new JtdaCore();
 
-  public JavaThreadDumpAnalyser(Shell xiWindow)
+  private String inputFileName; 
+  private StringBuffer inputTextValue; 
+  
+
+  public JavaThreadDumpAnalyser(Shell xiWindow, String fileName) {
+	  inputFileName = fileName;
+	  setupWindow(xiWindow);
+  }
+  public JavaThreadDumpAnalyser(Shell xiWindow) {
+	    setupWindow(xiWindow);
+  }
+  protected void setupWindow(Shell xiWindow)
   {
     window = xiWindow;
     MigLayout mainLayout = new MigLayout("fill", "[grow]", "[grow]");
@@ -166,9 +182,35 @@ public class JavaThreadDumpAnalyser
       }
     });
 
+    loadInputText();
     inputText.forceFocus();
   }
 
+  protected void loadInputText() { 
+	  if ( inputFileName != null && inputFileName.length() > 0 ) { 
+	  	try {
+	  		File inFile = new File(inputFileName);
+	  		if ( !inFile.exists() ) return; 
+	  		BufferedReader bis = new BufferedReader( new FileReader(inFile) );
+	  		StringBuffer sb = new StringBuffer();
+  			 // reads to the end of the stream
+	  		while ( bis.ready() ) { 
+	  			String s = bis.readLine(); 
+	  			sb.append(s + "\n");
+	  		}
+	  		//inputText.setText(sb.toString());
+	  		inputText.setText("Loaded from [" + inputFileName + "]");
+	  		inputTextValue = sb;
+		} catch (FileNotFoundException e) {
+			// This is ok, fall through to normal application cut-n-paste logic
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		  
+	  }
+  }
+  
   public void open()
   {
     window.open();
@@ -186,8 +228,15 @@ public class JavaThreadDumpAnalyser
     analyseButton.setEnabled(false);
 
     // Capture input
-    final String input = inputText.getText();
+    String inputBase; 
+    if ( inputTextValue != null && inputTextValue.length() > 0 ) { 
+    	inputBase = inputTextValue.toString(); 
+    } else { 
+    	inputBase = inputText.getText();
+    }
 
+    final String input = inputBase; 
+    
     // Capture settings
     final boolean ignoreLocks = ignoreLocksToggle.getSelection();
     final boolean includeNames = namesToggle.getSelection();
@@ -244,9 +293,16 @@ public class JavaThreadDumpAnalyser
     window.setMinimumSize(new Point(650, 600));
     window.setText("Java Thread Dump Analyser");
 
-    // Fill in UI
-    JavaThreadDumpAnalyser ui = new JavaThreadDumpAnalyser(window);
-
+    // Fill in UI 
+    JavaThreadDumpAnalyser ui = null;
+    if ( args.length < 1 ) {  
+    	System.out.println("Loading with no arguments");
+    	ui = new JavaThreadDumpAnalyser(window);
+    } else { 
+        // Do we have a commandline option?  
+    	System.out.println("Parsing commandline options...");
+    	ui = new JavaThreadDumpAnalyser(window, args[0]);
+    }
     // Open UI
     ui.open();
   }
