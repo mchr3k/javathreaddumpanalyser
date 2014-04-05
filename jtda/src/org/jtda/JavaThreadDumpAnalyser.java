@@ -32,6 +32,7 @@ public class JavaThreadDumpAnalyser
   private Text inputText;
   private Text outputText;
   private TabFolder folder;
+  private TabItem inputItem;
   private Button newToggle;
   private Button runnableToggle;
   private Button blockedToggle;
@@ -43,12 +44,11 @@ public class JavaThreadDumpAnalyser
   private Button ignoreLocksToggle;
   private Group filterGroup;
   private Group outputGroup;
-  
+
   private final JtdaCore data = new JtdaCore();
 
-  private String inputFileName; 
-  private StringBuffer inputTextValue; 
-  
+  private String inputFileName;
+  private StringBuffer inputTextValue;
 
   public JavaThreadDumpAnalyser(Shell xiWindow, String fileName) {
 	  inputFileName = fileName;
@@ -66,7 +66,7 @@ public class JavaThreadDumpAnalyser
     folder = new TabFolder(window, SWT.NONE);
     folder.setLayoutData("grow,hmin 0,wmin 0");
 
-    TabItem inputItem = new TabItem(folder, SWT.NONE);
+    inputItem = new TabItem(folder, SWT.NONE);
     Composite inputComp = new Composite(folder, SWT.NONE);
     inputComp.setLayoutData("grow,hmin 0,wmin 0");
     inputItem.setControl(inputComp);
@@ -116,7 +116,7 @@ public class JavaThreadDumpAnalyser
       @Override
       public void widgetSelected(SelectionEvent arg0)
       {
-        //updateOutput();
+        analyse();
       }
     };
 
@@ -186,31 +186,34 @@ public class JavaThreadDumpAnalyser
     inputText.forceFocus();
   }
 
-  protected void loadInputText() { 
-	  if ( inputFileName != null && inputFileName.length() > 0 ) { 
-	  	try {
-	  		File inFile = new File(inputFileName);
-	  		if ( !inFile.exists() ) return; 
-	  		BufferedReader bis = new BufferedReader( new FileReader(inFile) );
-	  		StringBuffer sb = new StringBuffer();
-  			 // reads to the end of the stream
-	  		while ( bis.ready() ) { 
-	  			String s = bis.readLine(); 
-	  			sb.append(s + "\n");
-	  		}
-	  		//inputText.setText(sb.toString());
-	  		inputText.setText("Loaded from [" + inputFileName + "]");
-	  		inputTextValue = sb;
-		} catch (FileNotFoundException e) {
-			// This is ok, fall through to normal application cut-n-paste logic
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		  
+  protected void loadInputText() {
+	  if ( inputFileName != null && inputFileName.length() > 0 ) {
+  	  	try {
+  	  		File inFile = new File(inputFileName);
+  	  		if ( !inFile.exists() ) return;
+  	  		BufferedReader bis = new BufferedReader( new FileReader(inFile) );
+  	  		StringBuffer sb = new StringBuffer();
+    			 // reads to the end of the stream
+  	  		while ( bis.ready() ) {
+  	  			String s = bis.readLine();
+  	  			sb.append(s + "\n");
+  	  		}
+  	  		//inputText.setText(sb.toString());
+  	  		inputText.setText("Loaded from [" + inputFileName + "]");
+  	  		inputText.setEnabled(false);
+  	  		inputText.setEditable(false);
+  	  		inputTextValue = sb;
+  	  		analyse();
+  	  		inputItem.dispose();
+  		} catch (FileNotFoundException e) {
+  			// This is ok, fall through to normal application cut-n-paste logic
+  		} catch (IOException e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}
 	  }
   }
-  
+
   public void open()
   {
     window.open();
@@ -228,15 +231,15 @@ public class JavaThreadDumpAnalyser
     analyseButton.setEnabled(false);
 
     // Capture input
-    String inputBase; 
-    if ( inputTextValue != null && inputTextValue.length() > 0 ) { 
-    	inputBase = inputTextValue.toString(); 
-    } else { 
+    String inputBase;
+    if ( inputTextValue != null && inputTextValue.length() > 0 ) {
+    	inputBase = inputTextValue.toString();
+    } else {
     	inputBase = inputText.getText();
     }
 
-    final String input = inputBase; 
-    
+    final String input = inputBase;
+
     // Capture settings
     final boolean ignoreLocks = ignoreLocksToggle.getSelection();
     final boolean includeNames = namesToggle.getSelection();
@@ -293,13 +296,13 @@ public class JavaThreadDumpAnalyser
     window.setMinimumSize(new Point(650, 600));
     window.setText("Java Thread Dump Analyser");
 
-    // Fill in UI 
+    // Fill in UI
     JavaThreadDumpAnalyser ui = null;
-    if ( args.length < 1 ) {  
+    if ( args.length < 1 ) {
     	System.out.println("Loading with no arguments");
     	ui = new JavaThreadDumpAnalyser(window);
-    } else { 
-        // Do we have a commandline option?  
+    } else {
+        // Do we have a commandline option?
     	System.out.println("Parsing commandline options...");
     	ui = new JavaThreadDumpAnalyser(window, args[0]);
     }

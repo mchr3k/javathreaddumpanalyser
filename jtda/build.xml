@@ -53,30 +53,32 @@
     <!-- UI (Cross platform SWT Jar (Windows/Linux)) -->
     <swtjar jarfile="./build/jars/jtda.jar"
             targetmainclass="org.jtda.JavaThreadDumpAnalyser"
-            swtversion="3.6.2">
+            swtversion="4.3">
       <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
       <!-- Required Jars -->
-      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-core-4.2.jar"/>
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-swt-4.2.jar"/>
 
       <!-- SWT Jars -->
-      <fileset dir="./lib" includes="swt-win*-3.6.2.jar" />
-      <fileset dir="./lib" includes="swt-lin*-3.6.2.jar" />
+      <fileset dir="./lib" includes="swt-win*-4.3.jar" />
+      <fileset dir="./lib" includes="swt-lin*-4.3.jar" />
     </swtjar>
 
     <!-- UI (Cross platform SWT Jar (OSX)) -->
     <swtjar jarfile="./build/tmp/jtda-osx.jar"
             targetmainclass="org.jtda.JavaThreadDumpAnalyser"
-            swtversion="3.6.2">
+            swtversion="4.3">
       <!-- JTDA classes -->
       <fileset dir="./build/classes" includes="**/*.class" excludes="**/loader/*.class" />
 
       <!-- Required Jars -->
-      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-core-4.2.jar"/>
+      <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-swt-4.2.jar"/>
 
       <!-- SWT Jars -->
-      <fileset dir="./lib" includes="swt-osx*-3.6.2.jar" />
+      <fileset dir="./lib" includes="swt-osx*-4.3.jar" />
     </swtjar>
 
     <!-- UI (OSX application) -->
